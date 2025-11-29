@@ -3,6 +3,8 @@ from __future__ import annotations
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 # 一數字心理學主運算 ===
 from models import CalcInput, CalcResponse
@@ -33,7 +35,13 @@ app = FastAPI(
     version="0.2.0",
     description="喬鈞文化 × 現代數字心理學 API（demo 版，含會員中心＋日記）",
 )
+# 讓 /static/xxx 可以拿到 static 資料夾的檔案
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# 讓 iPhone 找 /apple-touch-icon.png 時，也能拿到同一張圖
+@app.get("/apple-touch-icon.png")
+async def apple_touch_icon():
+    return FileResponse("static/apple-touch-icon.png")
 BASE_DIR = Path(__file__).parent
 
 @app.get("/", include_in_schema=False)
